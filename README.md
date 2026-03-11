@@ -1,50 +1,39 @@
-# Welcome to your Expo app 👋
+Generador de contraeñas
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Integrantes: Daniel Becerra Solis, Alex David AngulO, Daniel Alexander A.
 
-## Get started
+Descripción:  La app es un “Generador de Contraseñas Seguras”, el cual es una aplicación móvil desarrollada 
+en ExpoGo, con el objetivo de permitir que el usuario pueda generar contradeñas seguras y 
+personalizadas sin problemas. 
 
-1. Install dependencies
+Instalación: 
 
-   ```bash
-   npm install
-   ```
+Antes de instalar el proyecto, debe tener:
+Node.js instalado
+NPM instalado (se incluye con Node)
+Expo CLI (viene incluido con npx)
+Un celular con la app Expo Go
 
-2. Start the app
+2️. Descargar el proyecto
+Descargar el repositorio desde GitHub:
+Entrar al repositorio.
+Clic en Code.
+Seleccionar Download ZIP.
+Extraer la carpeta en tu computador.
 
-   ```bash
-   npx expo start
-   ```
+3️. Instalar dependencias: Abrir una terminal dentro de la carpeta del proyecto.
 
-In the output, you'll find options to open the app in a
+Ejecutar: npm install, reconstruirá la carpeta node_modules con todas las dependencias necesarias.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+4️. Ejecutar la aplicación
+En la misma terminal, utilizar:
+npx expo start, abrirá Expo y generará un código QR.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+5️. Probar la aplicación en el celular
+Asegúrese de que el celular y el PC estén en la misma red WiFi.
+En el celular, abre la app Expo Go.
+Selecciona Scan QR Code.
+Escanee el código QR que aparece en la terminal o en el navegador.
+La aplicación se ejecutará automáticamente en el dispositivo móvil.
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Captura de pantalla: https://github.com/user-attachments/assets/6c4fbf45-93cf-4aec-b2da-1d85404ce9f6
