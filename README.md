@@ -1,6 +1,6 @@
 Generador de contraeñas
 
-Integrantes: Daniel Becerra Solis, Alex David AngulO, Daniel Alexander A.
+Integrantes: Daniel Becerra Solis, Alex David Angulo, Daniel Alexander A.
 
 Descripción:  La app es un “Generador de Contraseñas Seguras”, el cual es una aplicación móvil desarrollada 
 en ExpoGo, con el objetivo de permitir que el usuario pueda generar contradeñas seguras y 
