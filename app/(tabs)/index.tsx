@@ -1,174 +1,211 @@
-// Importamos React y el hook useState para manejar estados dinámicos
 import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
-// Importamos los componentes de React Native que usaremos
-import { View, Text, TextInput, Button, StyleSheet, Switch } from 'react-native';
-
-// Componente principal de la pantalla
 export default function HomeScreen() {
 
-  // Estado para la longitud de la contraseña
-  const [length, setLength] = useState<string>('8');
-
-  // Estados para activar o desactivar tipos de caracteres
+  const [length, setLength] = useState<string>('10');
   const [includeUppercase, setIncludeUppercase] = useState<boolean>(true);
   const [includeLowercase, setIncludeLowercase] = useState<boolean>(true);
   const [includeNumbers, setIncludeNumbers] = useState<boolean>(true);
-  const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
-
-  // Estado donde se guardará la contraseña generada
+  const [includeSymbols, setIncludeSymbols] = useState<boolean>(true);
   const [generatedPassword, setGeneratedPassword] = useState<string>('');
+  const [strength, setStrength] = useState<string>('');
 
-  // Función que genera la contraseña
+  // 🔐 Generador avanzado
   const generatePassword = () => {
 
-    // Variable donde se almacenarán los caracteres disponibles
-    let characters = '';
-
-    // Si el switch de mayúsculas está activado se agregan letras mayúsculas
-    if (includeUppercase) characters += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-    // Si el switch de minúsculas está activado se agregan letras minúsculas
-    if (includeLowercase) characters += 'abcdefghijklmnopqrstuvwxyz';
-
-    // Si el switch de números está activado se agregan números
-    if (includeNumbers) characters += '0123456789';
-
-    // Si el switch de símbolos está activado se agregan caracteres especiales
-    if (includeSymbols) characters += '!@#$%^&*()_+';
-
-    // Convertimos la longitud ingresada (texto) a número
     const numericLength = parseInt(length);
 
-    // Validación: si la longitud es mayor a 10 no se permite generar contraseña
-    if (numericLength > 10) {
-      setGeneratedPassword('Límite no permitido (máximo 10)');
-      return; // Detiene la ejecución de la función
+    if (numericLength > 14) {
+      setGeneratedPassword('Máx 14 caracteres');
+      return;
     }
 
-    // Validación: si no se seleccionó ningún tipo de carácter
-    if (characters.length === 0) {
-      setGeneratedPassword('Selecciona al menos una opción');
-      return; // Detiene la función
+    if (numericLength < 8) {
+      setGeneratedPassword('Mínimo 8 recomendado');
+      return;
     }
 
-    // Variable donde se construirá la contraseña final
-    let password = '';
+    const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // sin caracteres confusos
+    const lower = 'abcdefghijkmnopqrstuvwxyz';
+    const numbers = '23456789';
+    const symbols = '!@#$%&*';
 
-    // Bucle que genera la contraseña carácter por carácter
-    for (let i = 0; i < numericLength; i++) {
+    let groups = [];
+    let passwordArray: string[] = [];
 
-      // Genera un índice aleatorio dentro del conjunto de caracteres
-      const randomIndex = Math.floor(Math.random() * characters.length);
+    if (includeUppercase) groups.push(upper);
+    if (includeLowercase) groups.push(lower);
+    if (includeNumbers) groups.push(numbers);
+    if (includeSymbols) groups.push(symbols);
 
-      // Agrega el carácter aleatorio a la contraseña
-      password += characters[randomIndex];
+    if (groups.length === 0) {
+      setGeneratedPassword('Selecciona opciones');
+      return;
     }
 
-    // Guarda la contraseña generada en el estado
-    setGeneratedPassword(password);
+    // 🔹 Garantizar variedad
+    groups.forEach(group => {
+      passwordArray.push(group[Math.floor(Math.random() * group.length)]);
+    });
+
+    // 🔹 Completar sin repetir mucho
+    while (passwordArray.length < numericLength) {
+      const group = groups[Math.floor(Math.random() * groups.length)];
+      const char = group[Math.floor(Math.random() * group.length)];
+
+      // Evitar repetición consecutiva
+      if (passwordArray[passwordArray.length - 1] !== char) {
+        passwordArray.push(char);
+      }
+    }
+
+    // 🔹 Mezclar bien
+    const shuffled = passwordArray.sort(() => Math.random() - 0.5);
+    const finalPassword = shuffled.join('');
+
+    setGeneratedPassword(finalPassword);
+
+    // 🔐 Evaluación mejorada
+    let score = 0;
+
+    if (numericLength >= 10) score++;
+    if (numericLength >= 12) score++;
+    if (includeUppercase) score++;
+    if (includeNumbers) score++;
+    if (includeSymbols) score++;
+
+    if (score <= 2) setStrength('Débil ❌');
+    else if (score <= 4) setStrength('Media ⚠️');
+    else setStrength('Fuerte 🔐');
   };
 
-  // Interfaz de la aplicación
+  // 📋 Copiar contraseña
+  const copyPassword = async () => {
+    if (generatedPassword) {
+      await Clipboard.setStringAsync(generatedPassword);
+      setStrength('Copiado ✅');
+    }
+  };
+
   return (
     <View style={styles.container}>
 
-      {/* Título de la aplicación */}
-      <Text style={styles.title}>🔐 Generador de Contraseñas</Text>
+      <Text style={styles.title}>🔐 Password Generator</Text>
 
-      {/* Texto que indica el campo de longitud */}
-      <Text style={styles.label}>Longitud:</Text>
+      <View style={styles.card}>
 
-      {/* Campo donde el usuario ingresa la longitud */}
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric" // Muestra teclado numérico
-        value={length}
-        onChangeText={setLength} // Actualiza el estado cuando cambia el texto
-      />
+        <Text style={styles.label}>Longitud</Text>
 
-      {/* Switch para activar o desactivar mayúsculas */}
-      <View style={styles.option}>
-        <Text>Mayúsculas</Text>
-        <Switch value={includeUppercase} onValueChange={setIncludeUppercase} />
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={length}
+          onChangeText={setLength}
+        />
+
+        <View style={styles.option}>
+          <Text style={styles.text}>Mayúsculas</Text>
+          <Switch value={includeUppercase} onValueChange={setIncludeUppercase} />
+        </View>
+
+        <View style={styles.option}>
+          <Text style={styles.text}>Minúsculas</Text>
+          <Switch value={includeLowercase} onValueChange={setIncludeLowercase} />
+        </View>
+
+        <View style={styles.option}>
+          <Text style={styles.text}>Números</Text>
+          <Switch value={includeNumbers} onValueChange={setIncludeNumbers} />
+        </View>
+
+        <View style={styles.option}>
+          <Text style={styles.text}>Símbolos</Text>
+          <Switch value={includeSymbols} onValueChange={setIncludeSymbols} />
+        </View>
+
+        <Button title="Generar 🔥" onPress={generatePassword} />
+
       </View>
 
-      {/* Switch para activar o desactivar minúsculas */}
-      <View style={styles.option}>
-        <Text>Minúsculas</Text>
-        <Switch value={includeLowercase} onValueChange={setIncludeLowercase} />
+      <View style={styles.resultBox}>
+        <Text style={styles.result}>{generatedPassword}</Text>
+
+        <TouchableOpacity style={styles.copyBtn} onPress={copyPassword}>
+          <Text style={styles.copyText}>📋 Copiar</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.strength}>{strength}</Text>
       </View>
-
-      {/* Switch para activar o desactivar números */}
-      <View style={styles.option}>
-        <Text>Números</Text>
-        <Switch value={includeNumbers} onValueChange={setIncludeNumbers} />
-      </View>
-
-      {/* Switch para activar o desactivar símbolos */}
-      <View style={styles.option}>
-        <Text>Símbolos</Text>
-        <Switch value={includeSymbols} onValueChange={setIncludeSymbols} />
-      </View>
-
-      {/* Botón que ejecuta la función para generar la contraseña */}
-      <Button title="Generar Contraseña" onPress={generatePassword} />
-
-      {/* Aquí se muestra la contraseña generada o el mensaje */}
-      <Text style={styles.result}>{generatedPassword}</Text>
 
     </View>
   );
 }
 
-// Estilos de la aplicación
 const styles = StyleSheet.create({
-
-  // Contenedor principal
   container: {
     flex: 1,
+    backgroundColor: '#020617',
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f2f2f2'
+    justifyContent: 'center'
   },
-
-  // Estilo del título
   title: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 'bold',
+    color: '#38bdf8',
     textAlign: 'center',
     marginBottom: 20
   },
-
-  // Texto de etiquetas
+  card: {
+    backgroundColor: '#1e293b',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20
+  },
   label: {
-    fontSize: 16,
-    marginTop: 10
+    color: '#94a3b8',
+    marginBottom: 5
   },
-
-  // Estilo del campo de entrada
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    borderRadius: 8,
-    marginBottom: 15,
-    backgroundColor: '#fff'
+    backgroundColor: '#0f172a',
+    color: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 15
   },
-
-  // Estilo para cada opción de switch
   option: {
-    flexDirection: 'row', // Coloca elementos en fila
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 10
   },
-
-  // Estilo donde se muestra la contraseña generada
+  text: {
+    color: '#e2e8f0'
+  },
+  resultBox: {
+    backgroundColor: '#1e293b',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center'
+  },
   result: {
-    marginTop: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center'
+    color: '#22c55e',
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  copyBtn: {
+    marginTop: 10,
+    backgroundColor: '#38bdf8',
+    padding: 10,
+    borderRadius: 8
+  },
+  copyText: {
+    color: '#000',
+    fontWeight: 'bold'
+  },
+  strength: {
+    marginTop: 10,
+    color: '#facc15',
+    fontSize: 16
   }
 });
